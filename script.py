@@ -117,22 +117,22 @@ def insertIntoDB(post):
     updateUserReactionStats(reacts)
 
 
-def getDetails(posts):
+def getDetails(GROUP_NAME, posts):
     for post in posts:
         insertIntoDB(post)
 
-    with open('pws.csv', 'w') as f:
-        writer = csv.writer(f, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    with open(GROUP_NAME+'_pws.csv', 'w') as f:
+        writer = csv.writer(f, delimiter=',')
         for row in c.execute("SELECT * FROM pws"):
             writer.writerow(row)
 
-    with open('uwps.csv', 'w') as f:
-        writer = csv.writer(f, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    with open(GROUP_NAME+'_uwps.csv', 'w') as f:
+        writer = csv.writer(f, delimiter=',')
         for row in c.execute("SELECT * FROM uwps"):
             writer.writerow(row)
 
-    with open('uwrs.csv', 'w') as f:
-        writer = csv.writer(f, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    with open(GROUP_NAME+'_uwrs.csv', 'w') as f:
+        writer = csv.writer(f, delimiter=',')
         for row in c.execute("SELECT * FROM uwrs"):
             writer.writerow(row)
 
@@ -190,7 +190,7 @@ if __name__ == '__main__':
 			Angrys INTEGER NOT NULL)
             ''')
 
-    getDetails(all_posts)
+    getDetails(events['name'], all_posts)
 
     conn.commit()
     conn.close()
