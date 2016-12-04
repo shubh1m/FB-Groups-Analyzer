@@ -125,16 +125,19 @@ def getDetails(GROUP_NAME, posts):
         writer = csv.writer(f, delimiter=',')
         for row in c.execute("SELECT * FROM pws"):
             writer.writerow(row)
+    print("Post-wise stats generated in <GROUP_NAME>_pws.csv")
 
     with open(GROUP_NAME+'_uwps.csv', 'w') as f:
         writer = csv.writer(f, delimiter=',')
         for row in c.execute("SELECT * FROM uwps"):
             writer.writerow(row)
+    print("User-wise post stats generated in <GROUP_NAME>_uwps.csv")
 
     with open(GROUP_NAME+'_uwrs.csv', 'w') as f:
         writer = csv.writer(f, delimiter=',')
         for row in c.execute("SELECT * FROM uwrs"):
             writer.writerow(row)
+    print("User-wise reaction stats generated in <GROUP_NAME>_uwrs.csv")
 
 
 if __name__ == '__main__':
@@ -152,6 +155,7 @@ if __name__ == '__main__':
     all_posts = events['feed']['data']
 
     conn = sqlite3.connect(db_name[:-1])
+    print("Database generated in <GROUP_NAME>_<GROUP_ID>")
     c = conn.cursor()
 
     c.execute('''CREATE TABLE IF NOT EXISTS pws
@@ -167,6 +171,7 @@ if __name__ == '__main__':
 			Angrys INTEGER NOT NULL)
             ''')
 
+    c.execute("DROP TABLE IF EXISTS uwrs")
     c.execute('''CREATE TABLE IF NOT EXISTS uwrs
             (UserID TEXT PRIMARY KEY NOT NULL,
             Name TEXT NOT NULL,
@@ -178,6 +183,7 @@ if __name__ == '__main__':
 			Angrys INTEGER NOT NULL)
             ''')
 
+    c.execute("DROP TABLE IF EXISTS uwps")
     c.execute('''CREATE TABLE IF NOT EXISTS uwps
             (UserID TEXT PRIMARY KEY NOT NULL,
             Name TEXT NOT NULL,
