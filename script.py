@@ -1,6 +1,7 @@
 import facebook
 import datetime
 import sqlite3
+import csv
 
 def getReactions(reacts):
     all_reacts = []
@@ -45,7 +46,7 @@ def insertPostStats(postID, ownerInfo, date, reacts):
 
     params = (postID, date, uid, uname, rnum[0], rnum[1], rnum[2], rnum[3], rnum[4], rnum[5])
     c.execute("INSERT OR IGNORE INTO pws VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", params)
-    
+
 
 def updateUserPostStats(ownerInfo, reacts):
     '''
@@ -66,7 +67,7 @@ def updateUserPostStats(ownerInfo, reacts):
             + ", Angrys = Angrys + " + str(rnum[5])
             + " WHERE UserID = " + str(uid)
             )
-    
+
     params = (uid, uname, 1, rnum[0], rnum[1], rnum[2], rnum[3], rnum[4], rnum[5])
     c.execute("INSERT OR IGNORE INTO uwps VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", params)
 
@@ -120,17 +121,20 @@ def getDetails(posts):
     for post in posts:
         insertIntoDB(post)
 
-    print("Post-wise")
-    for row in c.execute("SELECT * FROM pws"):
-        print (row)
+    with open('pws.csv', 'w') as f:
+        writer = csv.writer(f, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        for row in c.execute("SELECT * FROM pws"):
+            writer.writerow(row)
 
-    print("User-Post-wise")
-    for row in c.execute("SELECT * FROM uwps"):
-        print (row)
+    with open('uwps.csv', 'w') as f:
+        writer = csv.writer(f, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        for row in c.execute("SELECT * FROM uwps"):
+            writer.writerow(row)
 
-    print("User-Reaction-wise")
-    for row in c.execute("SELECT * FROM uwrs"):
-        print (row)
+    with open('uwrs.csv', 'w') as f:
+        writer = csv.writer(f, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        for row in c.execute("SELECT * FROM uwrs"):
+            writer.writerow(row)
 
 
 if __name__ == '__main__':
@@ -142,7 +146,7 @@ if __name__ == '__main__':
         GROUP_ID = f.readline()
 
     graph = facebook.GraphAPI(ACCESS_TOKEN, version='2.7')
-    events = graph.get_object(id=GROUP_ID, fields='name, description, owner, feed.limit(100000){created_time, from, reactions, permalink_url}')
+    events = graph.get_object(id=GROUP_ID, fields='name, description, owner, feed.limit(10000){created_time, from, reactions, permalink_url}')
 
     db_name = str(events['name'] + '_' + GROUP_ID)
     all_posts = events['feed']['data']
